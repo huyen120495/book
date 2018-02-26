@@ -29,7 +29,7 @@ app.get('/books', function(req, res) {
 });
 
 app.get('/book/:id', function(req,res) {
-    connection.query('select * from book where id = ?', [req.body.id], function(error, results) {
+    connection.query('select * from book where id = ?', [req.params.id], function(error, results) {
         if (error) throw error;
         res.end(JSON.stringify(results));
     });
