@@ -30,20 +30,22 @@ app.get('/books', function(req, res) {
 });
 
 app.get('/book/:id', function(req,res) {
-    connection.query('select * from book where id = ? and isdeleted = 0', [req.params.id], function(error, results) {
+    connection.query('select * from book where id = ? and isdeleted = 0 limit 1', [req.params.id], function(error, results) {
         if (error) throw error;
         res.end(JSON.stringify(results));
     });
 });
 
-app.post('/book', middleware, function(req, res) {
+let check = [middleware.checkTitleNull, middleware.checkTitleLength,middleware.checkAuthorNull,middleware.checkAuthorLength];
+
+app.post('/book', check, function(req, res) {
     connection.query('insert into book set ?', req.body, function(error, results) {
         if (error) throw error;
         res.status(201).send({message : 'created'});
     });
 });
 
-app.put('/book', function(req, res) {
+app.put('/book', check, function(req, res) {
     let sql = 'update book set title = ?, author = ?, publister = ?, price = ? where id = ? and isdeleted = 0';
     connection.query(sql, [req.body.title, req.body.author, req.body.publister, req.body.price, req.body.id],
         function(error, results) {
